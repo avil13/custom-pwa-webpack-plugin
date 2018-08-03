@@ -4,16 +4,17 @@
 
 #### Usage:
 
-```
+```JavaScript
+
 // webpack.config.js
 var path = require('path');
-var CustomPwa = require('custom-pwa-webpack-plugin);
+var CustomPwa = require('custom-pwa-webpack-plugin');
 
 module.exports = {
     // You config
     entry: './src/index.js',
     output: {
-        filename: 'index.js'
+        filename: 'bundle.js'
     },
     // ...
 
@@ -27,6 +28,7 @@ module.exports = {
         })
     ]
 }
+
 ```
 
 | Parameters    | Required      | Default               | Description  |
