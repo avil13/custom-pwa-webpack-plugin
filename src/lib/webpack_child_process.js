@@ -3,14 +3,18 @@ const webpack = require('webpack');
 const path = require('path');
 
 
-const getConfig = function(options) {
+function getConfig(options) {
     options = options || {};
 
+    if (!options.entry) {
+        throw new Error('Empty "entry" options in custom-pwa-webpack-plugin ');
+    }
+
     return {
-        entry: './src/index.js',
+        entry: options.entry,
         output: {
-            path: path.resolve(__dirname, '..', 'dist'),
-            filename: 'service-worker.js'
+            path: options.dist || path.resolve(__dirname, 'dist'),
+            filename: options.name || 'service-worker.js'
         },
         module: {
             rules: [{
@@ -28,14 +32,23 @@ const getConfig = function(options) {
         resolve: {
             extensions: ['*', '.js', '.ts', '.json']
         },
-        devServer: {
-            historyApiFallback: true,
-            noInfo: true,
-            overlay: true
-        },
-        performance: {
-            hints: false
-        },
         devtool: '#eval-source-map'
     };
-};
+}
+
+
+function runWebpack(params) {
+    const options = getConfig(params);
+    const compiler = webpack(options);
+
+    compiler.run((err, state) => {
+        if (err) {
+            throw new Error(err);
+        }
+    });
+}
+
+// test
+runWebpack({ entry: path.join(__dirname, 'tst.js') });
+
+module.exports = runWebpack;
