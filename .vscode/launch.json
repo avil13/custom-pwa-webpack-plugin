@@ -12,6 +12,18 @@
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ]
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "webpack",
+            "program": "${workspaceFolder}/node_modules/.bin/webpack-cli",
+            "args": [
+              "--config",
+              "${workspaceFolder}/test/webpack.config.js"
+            ],
+            "autoAttachChildProcesses": true,
+            "stopOnEntry": false
+          }
     ]
 }

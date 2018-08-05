@@ -40,8 +40,13 @@ function getConfig(options) {
 function runWebpack(params) {
     const options = getConfig(params);
     const compiler = webpack(options);
-
-    compiler.run((err, state) => {
+debugger;
+    // compiler.run((err, state) => {
+    //     if (err) {
+    //         throw new Error(err);
+    //     }
+    // });
+    compiler.afterCompile((err, state) => {
         if (err) {
             throw new Error(err);
         }

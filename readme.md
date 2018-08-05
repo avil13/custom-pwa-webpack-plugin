@@ -34,7 +34,7 @@ module.exports = {
 | Parameters    | Required      | Default               | Description  |
 |---------------|:-------------:|:----------------------|--------------|
 | entry         | true          |                       | The file from which to start the build script 
-| dist          | false          | 'dist'                | The folder to save the script
+| dist          | false         | 'dist'                | The folder to save the script
 | version       | false         |                       | Version to create the cache
 | name          | false         | 'service-worker.js'   | File name
 | file_patterns | false         | /\\.(js\|css\|html)$/ | Regular expression for file caching

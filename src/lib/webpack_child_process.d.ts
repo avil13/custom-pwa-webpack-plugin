@@ -1,3 +1,4 @@
+import webpack from 'webpack';
 
 export interface IConfigOptions {
     entry: string;
@@ -9,8 +10,17 @@ export interface IConfigOptions {
 
 export interface IWPConfig {
     [key: string]: string;
+    entry: string;
+    output: {
+        path: string;
+        filename: string;
+    };
+    module: {
+        rules: any[];
+    };
 }
 
-export declare function getConfig(options: IConfigOptions): any;
+
+export declare function getConfig(options: IConfigOptions): webpack.Configuration;
 
 export declare function runWebpack(options: IConfigOptions): void;
