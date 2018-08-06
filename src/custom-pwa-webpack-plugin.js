@@ -33,7 +33,7 @@ class CustomPwaWebpackPlugin {
         this.options = Object.assign({}, {
             dist: 'dist',
             name: 'service-worker.js',
-            file_patterns: /\\.(js\|css\|html)$/,
+            file_patterns: /\.(js|css|html)$/,
             files: []
         }, options);
     }
@@ -45,13 +45,21 @@ class CustomPwaWebpackPlugin {
      */
     apply(compiler) {
         const self = this;
+        let file_lists = [];
 
         const runAction = (compilation, callback) => {
             compilation.chunks.forEach(function(chunk) {
                 // chunk.files.forEach(function(filename) { var source = compilation.assets[filename].source(); });
                 // сохраняем список файлов в параметры
-                self.options.files.push(chunk.files);
+                file_lists.push(
+                    chunk.files.filter(file =>
+                        self.options.file_patterns.test(file)
+                    )
+                );
             });
+
+            self.options.files = [].concat.apply([], file_lists);
+
             // запускаем дочерний процесс, по сборке sw передавая ему список файлов
             createSW(self.options);
 
