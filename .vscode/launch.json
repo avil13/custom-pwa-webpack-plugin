@@ -11,6 +11,9 @@
             "program": "${workspaceFolder}/src/lib/webpack_child_process.js",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
+            ],
+            "args": [
+                "--local-debug-mode"
             ]
         },
         {

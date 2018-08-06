@@ -1,15 +1,15 @@
-//
+const loaderUtils = require('loader-utils');
 
 module.exports = function(content, map, meta) {
+    const options = loaderUtils.getOptions(this) || {};
 
-    this.callback(null, replacePatternData(content), map, meta);
+    this.callback(null, replacePatternData(content, options), map, meta);
     return; // always return undefined when calling callback()
 };
 
 
-function replacePatternData(content) {
-    let version = 'fuck the system';
-    let files = ['1.js', '2.js'];
+function replacePatternData(content, options) {
+    const { files, version } = options;
 
     const vers_str = `
 const VERSION = '${version}';

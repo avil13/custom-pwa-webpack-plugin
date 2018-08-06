@@ -10,6 +10,16 @@ function getConfig(options) {
         throw new Error('Empty "entry" options in custom-pwa-webpack-plugin ');
     }
 
+    if (!options.version) {
+        console.log('Empty "version" in custom-pwa-webpack-plugin ');
+        options.version = Date.now();
+    }
+
+    if (!options.files) {
+        console.log('Empty "files" list for cache in custom-pwa-webpack-plugin ');
+        options.files = [];
+    }
+
     return {
         entry: options.entry,
         output: {
@@ -20,24 +30,24 @@ function getConfig(options) {
             rules: [{
                     test: /\.ts$/,
                     exclude: /node_modules/,
-                    use: [
-                        {
+                    use: [{
                             loader: 'ts-loader'
                         },
                         {
-                            loader: 'file-and-version-loader'
+                            loader: 'file-and-version-loader',
+                            options
                         }
                     ]
                 },
                 {
                     test: /\.js$/,
                     exclude: /node_modules/,
-                    use: [
-                        {
+                    use: [{
                             loader: 'babel-loader'
                         },
                         {
-                            loader: 'file-and-version-loader'
+                            loader: 'file-and-version-loader',
+                            options
                         }
                     ]
                 }
@@ -71,12 +81,20 @@ function runWebpack(params) {
     // });
 }
 
-// test
-runWebpack({ entry: path.join(__dirname, 'tst.js') });
-
 function createSW(files, version, options) {
-    runWebpack(options);
+    runWebpack(
+        Object.assign({}, { version, options }, options)
+    );
 }
 
-
 module.exports = createSW;
+
+
+
+
+// test
+const DEBUG = process.argv.includes('--local-debug-mode');
+
+if (DEBUG) {
+    runWebpack({ entry: path.join(__dirname, '../../test/src/sw-test-source.js') });
+}
