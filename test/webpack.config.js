@@ -26,6 +26,9 @@ module.exports = {
     },
     devtool: '#eval-source-map',
     plugins: [
-        new CustomPwaWebpackPlugin()
+        new CustomPwaWebpackPlugin({
+            entry: path.join(__dirname, './src/sw-test-source.js'),
+            dist: path.join(__dirname, './dist'),
+        })
     ]
 };

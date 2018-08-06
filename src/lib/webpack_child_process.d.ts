@@ -6,6 +6,7 @@ export interface IConfigOptions {
     version?: string;
     name?: string;
     file_patterns?: RegExp;
+    files?: string[];
 }
 
 export interface IWPConfig {
@@ -24,3 +25,5 @@ export interface IWPConfig {
 export declare function getConfig(options: IConfigOptions): webpack.Configuration;
 
 export declare function runWebpack(options: IConfigOptions): void;
+
+export declare function createSW(options: IConfigOptions): void;

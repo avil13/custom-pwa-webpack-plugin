@@ -4,21 +4,6 @@ const path = require('path');
 
 
 function getConfig(options) {
-    options = options || {};
-
-    if (!options.entry) {
-        throw new Error('Empty "entry" options in custom-pwa-webpack-plugin ');
-    }
-
-    if (!options.version) {
-        console.log('Empty "version" in custom-pwa-webpack-plugin ');
-        options.version = Date.now();
-    }
-
-    if (!options.files) {
-        console.log('Empty "files" list for cache in custom-pwa-webpack-plugin ');
-        options.files = [];
-    }
 
     return {
         entry: options.entry,
@@ -81,10 +66,24 @@ function runWebpack(params) {
     // });
 }
 
-function createSW(files, version, options) {
-    runWebpack(
-        Object.assign({}, { version, options }, options)
-    );
+function createSW(options) {
+    options = options || {};
+
+    if (!options.entry) {
+        throw new Error('Empty "entry" options in custom-pwa-webpack-plugin ');
+    }
+
+    if (!options.version) {
+        console.log('Empty "version" in custom-pwa-webpack-plugin ');
+        options.version = Date.now();
+    }
+
+    if (!options.files) {
+        console.log('Empty "files" list for cache in custom-pwa-webpack-plugin ');
+        options.files = [];
+    }
+
+    runWebpack(options);
 }
 
 module.exports = createSW;
