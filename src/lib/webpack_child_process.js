@@ -40,7 +40,7 @@ function getConfig(options) {
 function runWebpack(params) {
     const options = getConfig(params);
     const compiler = webpack(options);
-debugger;
+    debugger;
     // compiler.run((err, state) => {
     //     if (err) {
     //         throw new Error(err);
@@ -54,6 +54,11 @@ debugger;
 }
 
 // test
-runWebpack({ entry: path.join(__dirname, 'tst.js') });
+// runWebpack({ entry: path.join(__dirname, 'tst.js') });
 
-module.exports = runWebpack;
+function createSW(files, version, options) {
+    runWebpack(options);
+}
+
+
+module.exports = createSW;

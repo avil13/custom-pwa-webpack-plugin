@@ -3,10 +3,10 @@ const CustomPwaWebpackPlugin = require('../src/custom-pwa-webpack-plugin');
 
 module.exports = {
     mode: 'production',
-    entry: './src/app.js',
+    entry: path.resolve(__dirname, 'src/app.js'),
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'app.js'
+        filename: 'app-[hash].js'
     },
     module: {
         rules: [{
