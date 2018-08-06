@@ -32,7 +32,7 @@ var CustomPwaWebpackPlugin = require('custom-pwa-webpack-plugin');
 
 module.exports = {
     // You config
-    entry: path.join(__dirname__, './src/index.js'),
+    entry: path.join(__dirname, './src/index.js'),
     output: {
         filename: 'bundle.js'
     },
@@ -40,9 +40,9 @@ module.exports = {
 
     plugins: [
         new CustomPwaWebpackPlugin({
-            entry: path.join(__dirname__, 'my-service-worker.js'),
-            dist: path.join(__dirname__, 'dist'), 
-            version: require('package').version,
+            entry: path.join(__dirname, 'my-service-worker.js'),
+            dist: path.join(__dirname, 'dist'), 
+            version: require('./package').version,
             name: 'service-worker.js',
             file_patterns: /\.(js|css|html)$/
         })
