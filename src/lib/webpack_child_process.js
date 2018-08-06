@@ -19,20 +19,38 @@ function getConfig(options) {
         module: {
             rules: [{
                     test: /\.ts$/,
-                    loader: "ts-loader",
-                    exclude: /node_modules/
+                    exclude: /node_modules/,
+                    use: [
+                        {
+                            loader: 'ts-loader'
+                        },
+                        {
+                            loader: 'file-and-version-loader'
+                        }
+                    ]
                 },
                 {
                     test: /\.js$/,
-                    loader: 'babel-loader',
-                    exclude: /node_modules/
+                    exclude: /node_modules/,
+                    use: [
+                        {
+                            loader: 'babel-loader'
+                        },
+                        {
+                            loader: 'file-and-version-loader'
+                        }
+                    ]
                 }
             ]
         },
         resolve: {
             extensions: ['*', '.js', '.ts', '.json']
         },
-        devtool: '#eval-source-map'
+        resolveLoader: {
+            alias: {
+                'file-and-version-loader': path.join(__dirname, './file-and-version-loader')
+            }
+        }
     };
 }
 
@@ -40,21 +58,21 @@ function getConfig(options) {
 function runWebpack(params) {
     const options = getConfig(params);
     const compiler = webpack(options);
-    debugger;
-    // compiler.run((err, state) => {
+
+    compiler.run((err, state) => {
+        if (err) {
+            throw err; // new Error(err);
+        }
+    });
+    // compiler.afterCompile((err, state) => {
     //     if (err) {
     //         throw new Error(err);
     //     }
     // });
-    compiler.afterCompile((err, state) => {
-        if (err) {
-            throw new Error(err);
-        }
-    });
 }
 
 // test
-// runWebpack({ entry: path.join(__dirname, 'tst.js') });
+runWebpack({ entry: path.join(__dirname, 'tst.js') });
 
 function createSW(files, version, options) {
     runWebpack(options);
