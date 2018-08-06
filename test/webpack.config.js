@@ -1,5 +1,5 @@
 const path = require('path');
-const CustomPwaWebpackPlugin = require('../src/index');
+const CustomPwaWebpackPlugin = require('../src/custom-pwa-webpack-plugin');
 
 module.exports = {
     mode: 'production',
