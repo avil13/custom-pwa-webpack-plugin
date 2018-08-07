@@ -2,6 +2,9 @@
 
 ### webpack plugin for development and customization service worker
 
+![PWA](img/pwa-logo.svg)
+![webpack](img/webpack-logo-on-white-bg.svg)
+
 A plugin to help you create your Progressive Web Apps.
 
 It will suit you if you know what you are doing, and you just need a tool for this.
