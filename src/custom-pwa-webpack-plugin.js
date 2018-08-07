@@ -33,6 +33,7 @@ class CustomPwaWebpackPlugin {
         this.options = Object.assign({}, {
             dist: 'dist',
             name: 'service-worker.js',
+            version: Date.now(),
             file_patterns: /\.(js|css|html)$/gi,
             file_prefix: '/',
             files: []
@@ -48,33 +49,45 @@ class CustomPwaWebpackPlugin {
         const self = this;
         let file_lists = [];
 
-        const runAction = (compilation, callback) => {
+        const collectFiles = (compilation, callback) => {
             compilation.chunks.forEach(function(chunk) {
-                // chunk.files.forEach(function(filename) { var source = compilation.assets[filename].source(); });
-                // сохраняем список файлов в параметры
-                file_lists.push(
-                    chunk.files.filter(file =>
-                        self.options.file_patterns.test(file)
-                    )
-                );
+                chunk.files.forEach(function(filename) {
+                    // var source = compilation.assets[filename].source();
+                    // сохраняем список файлов в параметры
+                    if (self.options.file_patterns.test(filename)) {
+                        file_lists.push(filename);
+                    }
+                });
             });
-
-            self.options.files = [].concat.apply([], file_lists).map(file => `${self.options.file_prefix}${file}`);
-
-            // запускаем дочерний процесс, по сборке sw передавая ему список файлов
-            createSW(self.options);
-
             callback();
         };
 
+        //
+        const runWorkWithSW = (compilation, callback) => {
+            self.options.files = file_lists.map(file => `${self.options.file_prefix}${file}`);
+            console.log('\n');
+            console.log('\x1b[36m%s\x1b[0m', 'service worker version:', self.options.version);
+            console.log('\x1b[36m%s\x1b[0m', 'service worker files for caching:');
+            console.log(self.options.files.join('\n'));
+            console.log('\n');
+            // запускаем дочерний процесс, по сборке sw передавая ему список файлов
+            createSW(self.options);
+            callback();
+        };
 
         if (compiler.hooks) {
+            // собираем список всех файлов
             compiler.hooks
-                // .afterEmit
-                .emit
-                .tapAsync(PLUGIN_NAME, runAction);
+                .afterCompile
+                .tapAsync(PLUGIN_NAME, collectFiles);
+
+            // работаем с sw файлом
+            compiler.hooks
+                .afterEmit
+                .tapAsync(PLUGIN_NAME, runWorkWithSW);
         } else {
-            compiler.plugin('after-emit', runAction);
+            compiler.plugin('after-compile', collectFiles);
+            compiler.plugin('after-emit', runWorkWithSW);
         }
     }
 

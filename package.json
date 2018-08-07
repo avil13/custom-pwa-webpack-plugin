@@ -1,13 +1,18 @@
 {
   "name": "custom-pwa-webpack-plugin",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Make You PWA with You scripts",
   "main": "src/custom-pwa-webpack-plugin.js",
   "scripts": {
     "test": "cd test && webpack --config webpack.config.js",
     "prepublish": "npm run test"
   },
-  "keywords": [],
+  "keywords": [
+      "pwa",
+      "progressive web apps",
+      "webpack",
+      "webpack4"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
