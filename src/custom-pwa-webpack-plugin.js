@@ -33,7 +33,6 @@ class CustomPwaWebpackPlugin {
         this.options = Object.assign({}, {
             dist: 'dist',
             name: 'service-worker.js',
-            version: Date.now(),
             file_patterns: /\.(js|css|html)$/gi,
             file_prefix: '/',
             files: []
@@ -64,6 +63,10 @@ class CustomPwaWebpackPlugin {
 
         //
         const runWorkWithSW = (compilation, callback) => {
+            if (!self.options.version) {
+                self.options.version = compilation.hash;
+            }
+
             self.options.files = file_lists.map(file => `${self.options.file_prefix}${file}`);
             console.log('\n');
             console.log('\x1b[36m%s\x1b[0m', 'service worker version:', self.options.version);
