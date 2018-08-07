@@ -1,9 +1,8 @@
-# [wip] custom-pwa-webpack-plugin
+# custom-pwa-webpack-plugin
 
 ### webpack plugin for development and customization service worker
 
-![PWA](img/pwa-logo.svg)
-![webpack](img/webpack-logo-on-white-bg.svg)
+![webpack](img/custom-pwa-webpack-plugin.svg)
 
 A plugin to help you create your Progressive Web Apps.
 
@@ -56,10 +55,11 @@ module.exports = {
 
 ```
 
-| Parameters    | Required      | Default               | Description  |
-|---------------|:-------------:|:----------------------|--------------|
-| entry         | true          |                       | The file from which to start the build script (absolute path)
-| dist          | true          |                       | The folder to save the script (absolute path)
-| version       | false         |                       | Version to create the cache
-| name          | false         | 'service-worker.js'   | File name
-| file_patterns | false         | /\\.(js\|css\|html)$/ | Regular expression for file caching
+| Parameters    | Required      | Default                 | Description  |
+|---------------|:-------------:|:------------------------|--------------|
+| entry         | true          |                         | The file from which to start the build script (absolute path)
+| dist          | true          |                         | The folder to save the script (absolute path)
+| version       | false         |                         | Version to create the cache
+| name          | false         | 'service-worker.js'     | File name
+| file_patterns | false         | /\\.(js\|css\|html)$/gi | Regular expression for file caching
+| file_prefix   | false         | '/'                     | Prefix path for files

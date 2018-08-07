@@ -6,6 +6,7 @@ export interface IConfigOptions {
     version?: string;
     name?: string;
     file_patterns?: RegExp;
+    file_prefix?: string;
     files?: string[];
 }
 

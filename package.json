@@ -4,7 +4,8 @@
   "description": "Make You PWA with You scripts",
   "main": "src/custom-pwa-webpack-plugin.js",
   "scripts": {
-    "test": "cd test && webpack --config webpack.config.js"
+    "test": "cd test && webpack --config webpack.config.js",
+    "prepublish": "npm run test"
   },
   "keywords": [],
   "author": "",
