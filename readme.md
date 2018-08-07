@@ -55,11 +55,11 @@ module.exports = {
 
 ```
 
-| Parameters    | Required      | Default                 | Description  |
-|---------------|:-------------:|:------------------------|--------------|
-| entry         | true          |                         | The file from which to start the build script (absolute path)
-| dist          | true          |                         | The folder to save the script (absolute path)
-| version       | false         |                         | Version to create the cache
-| name          | false         | 'service-worker.js'     | File name
-| file_patterns | false         | /\\.(js\|css\|html)$/gi | Regular expression for file caching
-| file_prefix   | false         | '/'                     | Prefix path for files
+| Parameters    | Default                 | Required      | Description  |
+|---------------|:------------------------|:-------------:|--------------|
+| entry         |                         | true          | The file from which to start the build script (absolute path)
+| dist          |                         | true          | The folder to save the script (absolute path)
+| version       |                         | false         | Version to create the cache
+| name          | 'service-worker.js'     | false         | File name
+| file_patterns | /\\.(js\|css\|html)$/gi | false         | Regular expression for file caching
+| file_prefix   | '/'                     | false         | Prefix path for files
