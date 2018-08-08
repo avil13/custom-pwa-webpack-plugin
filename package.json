@@ -1,26 +1,30 @@
 {
-  "name": "custom-pwa-webpack-plugin",
-  "version": "0.0.6",
-  "description": "Make You PWA with You scripts",
-  "main": "src/custom-pwa-webpack-plugin.js",
-  "scripts": {
-    "test": "cd test && webpack --config webpack.config.js",
-    "prepublish": "npm run test"
-  },
-  "keywords": [
-      "pwa",
-      "progressive web apps",
-      "webpack",
-      "webpack4"
-  ],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "loader-utils": "^1.1.0",
-    "ts-loader": "^4.4.2",
-    "webpack": "^4.16.4",
-    "webpack-cli": "^3.1.0"
-  }
+    "name": "custom-pwa-webpack-plugin",
+    "version": "0.0.7",
+    "description": "Make You PWA with You scripts",
+    "main": "src/custom-pwa-webpack-plugin.js",
+    "scripts": {
+        "test": "cd test && webpack --config webpack.config.js",
+        "prepublish": "npm run test"
+    },
+    "keywords": [
+        "pwa",
+        "progressive web apps",
+        "webpack",
+        "webpack4"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/avil13/custom-pwa-webpack-plugin"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "babel-core": "^6.26.3",
+        "babel-loader": "^7.1.5",
+        "loader-utils": "^1.1.0",
+        "ts-loader": "^4.4.2",
+        "webpack": "^4.16.4",
+        "webpack-cli": "^3.1.0"
+    }
 }
