@@ -81,7 +81,7 @@ class CustomPwaWebpackPlugin {
         if (compiler.hooks) {
             // собираем список всех файлов
             compiler.hooks
-                .afterCompile
+                .shouldEmit
                 .tapAsync(PLUGIN_NAME, collectFiles);
 
             // работаем с sw файлом
@@ -89,7 +89,7 @@ class CustomPwaWebpackPlugin {
                 .afterEmit
                 .tapAsync(PLUGIN_NAME, runWorkWithSW);
         } else {
-            compiler.plugin('after-compile', collectFiles);
+            compiler.plugin('should-emit', collectFiles);
             compiler.plugin('after-emit', runWorkWithSW);
         }
     }
