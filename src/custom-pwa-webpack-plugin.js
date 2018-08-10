@@ -33,7 +33,7 @@ class CustomPwaWebpackPlugin {
         this.options = Object.assign({}, {
             dist: 'dist',
             name: 'service-worker.js',
-            file_patterns: /\.(js|css|html)$/gi,
+            file_pattern: /\.(js|css|html)$/i,
             file_prefix: '/',
             files: []
         }, options);
@@ -46,20 +46,27 @@ class CustomPwaWebpackPlugin {
      */
     apply(compiler) {
         const self = this;
-        let file_lists = [];
 
         const collectFiles = (compilation, callback) => {
+            if (self.options.files.length) {
+                callback && callback();
+                return true;
+            }
             compilation.chunks.forEach(function(chunk) {
                 chunk.files.forEach(function(filename) {
                     // var source = compilation.assets[filename].source();
-                    var source = compilation.assets[filename];
                     // сохраняем список файлов в параметры
-                    if (self.options.file_patterns.test(filename)) {
-                        file_lists.push(filename);
+
+                    if (self.options.file_pattern.test(filename)) {
+                        self.options.files.push(
+                            `${self.options.file_prefix}${filename}`
+                        );
                     }
                 });
             });
+
             callback && callback();
+            return true;
         };
 
         //
@@ -68,7 +75,6 @@ class CustomPwaWebpackPlugin {
                 self.options.version = compilation.hash;
             }
 
-            self.options.files = file_lists.map(file => `${self.options.file_prefix}${file}`);
             console.log('\n');
             console.log('\x1b[36m%s\x1b[0m', 'service worker version:', self.options.version);
             console.log('\x1b[36m%s\x1b[0m', 'service worker files for caching:');
@@ -77,6 +83,7 @@ class CustomPwaWebpackPlugin {
             // запускаем дочерний процесс, по сборке sw передавая ему список файлов
             createSW(self.options);
             callback();
+            return true;
         };
 
         if (compiler.hooks) {

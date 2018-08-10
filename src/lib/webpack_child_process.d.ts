@@ -5,7 +5,7 @@ export interface IConfigOptions {
     dist?: string;
     version?: string;
     name?: string;
-    file_patterns?: RegExp;
+    file_pattern?: RegExp;
     file_prefix?: string;
     files?: string[];
 }
