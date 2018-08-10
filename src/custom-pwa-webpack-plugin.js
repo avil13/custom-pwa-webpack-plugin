@@ -52,13 +52,14 @@ class CustomPwaWebpackPlugin {
             compilation.chunks.forEach(function(chunk) {
                 chunk.files.forEach(function(filename) {
                     // var source = compilation.assets[filename].source();
+                    var source = compilation.assets[filename];
                     // сохраняем список файлов в параметры
                     if (self.options.file_patterns.test(filename)) {
                         file_lists.push(filename);
                     }
                 });
             });
-            callback();
+            callback && callback();
         };
 
         //
@@ -82,7 +83,7 @@ class CustomPwaWebpackPlugin {
             // собираем список всех файлов
             compiler.hooks
                 .shouldEmit
-                .tapAsync(PLUGIN_NAME, collectFiles);
+                .tap(PLUGIN_NAME, collectFiles);
 
             // работаем с sw файлом
             compiler.hooks
