@@ -12,6 +12,8 @@ const createSW = require('./lib/webpack_child_process');
 */
 
 const PLUGIN_NAME = 'CustomPwaWebpackPlugin';
+// HACK for webpack <4 and Nuxt
+let _count_of_runs = 0;
 
 
 /** @typedef {import("webpack/lib/Compiler")} Compiler */
@@ -46,6 +48,15 @@ class CustomPwaWebpackPlugin {
      */
     apply(compiler) {
         const self = this;
+        // HACK for webpack <4 and Nuxt
+        ++_count_of_runs;
+        if (self.options.num_runned) {
+            console.log('\x1b[33m%s\x1b[0m', `with option "num_runned" run just one iteration, current num:`, _count_of_runs);
+
+            if (self.options.num_runned !== _count_of_runs) {
+                return;
+            }
+        }
 
         const collectFiles = (compilation, callback) => {
             if (self.options.files.length) {

@@ -61,5 +61,8 @@ module.exports = {
 | dist          |                         | true          | The folder to save the script (absolute path)
 | version       |                         | false         | Version to create the cache
 | name          | 'service-worker.js'     | false         | File name
-| file_pattern | /\\.(js\|css\|html)$/i | false         | Regular expression for file caching
+| file_pattern  | /\\.(js\|css\|html)$/i  | false         | Regular expression for file caching
 | file_prefix   | '/'                     | false         | Prefix path for files
+| num_runned    | 0                       | false         | HACK for webpack <4 and Nuxt
+
+> `num_runned` - Need if you start multiple processes, and only one need to run. Then specify the number. For Nuxt is `1`.
