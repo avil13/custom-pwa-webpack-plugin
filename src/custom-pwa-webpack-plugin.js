@@ -1,5 +1,6 @@
 // @ts-check
 
+const glob = require('glob');
 const createSW = require('./lib/webpack_child_process');
 
 /*
@@ -86,21 +87,21 @@ class CustomPwaWebpackPlugin {
                         }
                     }
 
-                    opt.fileDependencies.forEach((context) => {
-                        if (Array.isArray(compilation.fileDependencies)) {
-                            compilation.fileDependencies.push(context)
-                        } else {
-                            compilation.fileDependencies.add(context);
-                        }
-                    });
+                    // opt.fileDependencies.forEach((context) => {
+                    //     if (Array.isArray(compilation.fileDependencies)) {
+                    //         compilation.fileDependencies.push(context)
+                    //     } else {
+                    //         compilation.fileDependencies.add(context);
+                    //     }
+                    // });
 
-                    opt.contextDependencies.forEach((context) => {
-                        if (Array.isArray(compilation.contextDependencies)) {
-                            compilation.contextDependencies.push(context)
-                        } else {
-                            compilation.contextDependencies.add(context);
-                        }
-                    });
+                    // opt.contextDependencies.forEach((context) => {
+                    //     if (Array.isArray(compilation.contextDependencies)) {
+                    //         compilation.contextDependencies.push(context)
+                    //     } else {
+                    //         compilation.contextDependencies.add(context);
+                    //     }
+                    // });
                 })
                 .then(() => {
                     callback && callback();
@@ -132,8 +133,32 @@ class CustomPwaWebpackPlugin {
             compiler.hooks
                 .shouldEmit
                 .tap(PLUGIN_NAME, collectFiles);
+
+            if (self.options.watch) {
+                compiler.hooks
+                .afterCompile
+                .tap(PLUGIN_NAME, this.addWatch(self.options.watch));
+            }
         } else {
             compiler.plugin('should-emit', collectFiles);
+
+            if (self.options.watch) {
+                compiler.plugin('after-compile', this.addWatch(self.options.watch));
+            }
+        }
+    }
+
+    addWatch(watch) {
+        return (compilation, callback) => {
+            glob.sync(watch).forEach((file) => {
+                if (Array.isArray(compilation.fileDependencies)) {
+                    compilation.fileDependencies.push(file)
+                } else {
+                    compilation.fileDependencies.add(file);
+                }
+            });
+
+            callback && callback();
         }
     }
 
