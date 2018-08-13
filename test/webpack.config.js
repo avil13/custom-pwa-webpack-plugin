@@ -2,7 +2,7 @@ const path = require('path');
 const CustomPwaWebpackPlugin = require('../src/custom-pwa-webpack-plugin');
 
 module.exports = {
-    mode: 'production',
+    mode: 'development', // 'production',
     entry: path.resolve(__dirname, 'src/app.js'),
     output: {
         path: path.resolve(__dirname, 'dist'),

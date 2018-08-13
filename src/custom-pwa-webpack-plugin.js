@@ -33,7 +33,6 @@ class CustomPwaWebpackPlugin {
         }
 
         this.options = Object.assign({}, {
-            dist: 'dist',
             name: 'service-worker.js',
             file_pattern: /\.(js|css|html)$/i,
             file_prefix: '/',
@@ -58,6 +57,9 @@ class CustomPwaWebpackPlugin {
             }
         }
 
+        self.options.dist = self.options.dist || compiler.options.output.path;
+        self.options.mode = self.options.mode || compiler.options.mode;
+
         const collectFiles = (compilation, callback) => {
             if (self.options.files.length) {
                 callback && callback();
@@ -76,8 +78,19 @@ class CustomPwaWebpackPlugin {
                 });
             });
 
-            callback && callback();
-            return true;
+            runWorkWithSW(compilation)
+                .then(assets => {
+                    for (let k in assets) {
+                        if (assets.hasOwnProperty(k)) {
+                            compilation.assets[k] = assets[k]
+                        }
+                    }
+                })
+                .then(() => {
+                    callback && callback();
+                });
+            //
+                return true;
         };
 
         //
@@ -86,30 +99,25 @@ class CustomPwaWebpackPlugin {
                 self.options.version = compilation.hash;
             }
 
-            console.log('\n');
-            console.log('\x1b[36m%s\x1b[0m', 'service worker version:', self.options.version);
-            console.log('\x1b[36m%s\x1b[0m', 'service worker files for caching:');
-            console.log(self.options.files.join('\n'));
-            console.log('\n');
+            setTimeout(() => {
+                console.log('\n\x1b[36m%s\x1b[0m \x1b[35m%s\x1b[0m\n\x1b[36m%s\x1b[0m \n\x1b[32m%s\x1b[0m',
+                    'service worker version:',
+                    self.options.version,
+                    'service worker files for caching:',
+                    (self.options.files.length ? self.options.files.join('\n') : '[]')
+                );
+            }, 0);
             // запускаем дочерний процесс, по сборке sw передавая ему список файлов
-            createSW(self.options);
-            callback();
-            return true;
+            return createSW(self.options);
         };
 
         if (compiler.hooks) {
-            // собираем список всех файлов
+            // // собираем список всех файлов
             compiler.hooks
                 .shouldEmit
                 .tap(PLUGIN_NAME, collectFiles);
-
-            // работаем с sw файлом
-            compiler.hooks
-                .afterEmit
-                .tapAsync(PLUGIN_NAME, runWorkWithSW);
         } else {
             compiler.plugin('should-emit', collectFiles);
-            compiler.plugin('after-emit', runWorkWithSW);
         }
     }
 

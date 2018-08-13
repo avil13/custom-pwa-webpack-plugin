@@ -8,6 +8,7 @@ export interface IConfigOptions {
     file_pattern?: RegExp;
     file_prefix?: string;
     files?: string[];
+    mode?: 'development' | 'production';
 }
 
 export interface IWPConfig {
