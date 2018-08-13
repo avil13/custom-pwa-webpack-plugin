@@ -70,7 +70,11 @@ function createSW(params) {
 
             const assets = Object.assign({}, state.compilation.assets);
 
-            resolve(assets);
+            resolve({
+                assets,
+                fileDependencies: state.compilation.fileDependencies,
+                contextDependencies: state.compilation.contextDependencies
+            });
 
             for (let k in state.compilation.assets) {
                 if (state.compilation.assets.hasOwnProperty(k)) {

@@ -4,3 +4,6 @@ export interface CustomPwaWebpackPlugin {
     constructor(options: IConfigOptions): void;
     options: IConfigOptions;
 }
+
+
+export declare function createSW(params: IConfigOptions);

@@ -79,18 +79,34 @@ class CustomPwaWebpackPlugin {
             });
 
             runWorkWithSW(compilation)
-                .then(assets => {
-                    for (let k in assets) {
-                        if (assets.hasOwnProperty(k)) {
-                            compilation.assets[k] = assets[k]
+                .then(opt => {
+                    for (let k in opt.assets) {
+                        if (opt.assets.hasOwnProperty(k)) {
+                            compilation.assets[k] = opt.assets[k]
                         }
                     }
+
+                    opt.fileDependencies.forEach((context) => {
+                        if (Array.isArray(compilation.fileDependencies)) {
+                            compilation.fileDependencies.push(context)
+                        } else {
+                            compilation.fileDependencies.add(context);
+                        }
+                    });
+
+                    opt.contextDependencies.forEach((context) => {
+                        if (Array.isArray(compilation.contextDependencies)) {
+                            compilation.contextDependencies.push(context)
+                        } else {
+                            compilation.contextDependencies.add(context);
+                        }
+                    });
                 })
                 .then(() => {
                     callback && callback();
                 });
             //
-                return true;
+            // return true;
         };
 
         //
