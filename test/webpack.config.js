@@ -2,6 +2,10 @@ const path = require('path');
 const CustomPwaWebpackPlugin = require('../src/custom-pwa-webpack-plugin');
 
 module.exports = {
+    watch: true,
+    watchOptions: {
+        poll: true
+    },
     mode: 'development', // 'production',
     entry: path.resolve(__dirname, 'src/app.js'),
     output: {
@@ -29,6 +33,7 @@ module.exports = {
         new CustomPwaWebpackPlugin({
             entry: path.join(__dirname, './src/sw-test-source.js'),
             dist: path.join(__dirname, './dist'),
+            watch: path.join(__dirname, './src/**/*.js')
         })
     ]
 };

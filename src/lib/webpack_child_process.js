@@ -59,6 +59,15 @@ const PLUGIN_NAME = 'Child_CustomPwaWebpackPlugin'
 function createSW(params) {
     params = params || {};
 
+    setTimeout(() => {
+        console.log('\n\x1b[36m%s\x1b[0m \x1b[35m%s\x1b[0m\n\x1b[36m%s\x1b[0m \n\x1b[32m%s\x1b[0m',
+            'service worker version:',
+            params.version,
+            'service worker files for caching:',
+            (params.files.length ? params.files.join('\n') : '[]')
+        );
+    }, 0);
+
     return new Promise((resolve, reject) => {
         const options = getConfig(params);
         const compiler = webpack(options);

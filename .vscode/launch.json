@@ -7,6 +7,18 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "webpack",
+            "program": "${workspaceFolder}/node_modules/.bin/webpack-cli",
+            "args": [
+                "--config",
+                "${workspaceFolder}/test/webpack.config.js"
+            ],
+            "autoAttachChildProcesses": true,
+            "stopOnEntry": false
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "wp_child",
             "program": "${workspaceFolder}/src/lib/webpack_child_process.js",
             "outFiles": [
@@ -15,18 +27,6 @@
             "args": [
                 "--local-debug-mode"
             ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "webpack",
-            "program": "${workspaceFolder}/node_modules/.bin/webpack-cli",
-            "args": [
-              "--config",
-              "${workspaceFolder}/test/webpack.config.js"
-            ],
-            "autoAttachChildProcesses": true,
-            "stopOnEntry": false
-          }
+        }
     ]
 }

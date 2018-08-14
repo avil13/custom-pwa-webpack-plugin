@@ -50,6 +50,7 @@ class CustomPwaWebpackPlugin {
         const self = this;
         // HACK for webpack <4 and Nuxt
         ++_count_of_runs;
+
         if (self.options.num_runned) {
             console.log('\x1b[33m%s\x1b[0m', `with option "num_runned" run just one iteration, current num:`, _count_of_runs);
 
@@ -58,19 +59,11 @@ class CustomPwaWebpackPlugin {
             }
         }
 
-        self.options.dist = self.options.dist || compiler.options.output.path;
-        self.options.mode = self.options.mode || compiler.options.mode;
-
-        const collectFiles = (compilation, callback) => {
-            if (self.options.files.length) {
-                callback && callback();
-                return true;
-            }
+        const collectFiles = function(compilation, callback) {
             compilation.chunks.forEach(function(chunk) {
                 chunk.files.forEach(function(filename) {
                     // var source = compilation.assets[filename].source();
                     // сохраняем список файлов в параметры
-
                     if (self.options.file_pattern.test(filename)) {
                         self.options.files.push(
                             `${self.options.file_prefix}${filename}`
@@ -79,66 +72,53 @@ class CustomPwaWebpackPlugin {
                 });
             });
 
-            runWorkWithSW(compilation)
+            if (!self.options.version) {
+                self.options.version = compilation.hash;
+            }
+
+            // запускаем дочерний процесс, по сборке sw передавая ему список файлов
+            createSW(self.options)
                 .then(opt => {
                     for (let k in opt.assets) {
                         if (opt.assets.hasOwnProperty(k)) {
                             compilation.assets[k] = opt.assets[k]
                         }
                     }
+                    opt.fileDependencies.forEach((context) => {
+                        // if (Array.isArray(compilation.fileDependencies)) {
+                        //     compilation.fileDependencies.push(context)
+                        // } else {
+                        compilation.fileDependencies.add(context);
+                        // }
+                    });
 
-                    // opt.fileDependencies.forEach((context) => {
-                    //     if (Array.isArray(compilation.fileDependencies)) {
-                    //         compilation.fileDependencies.push(context)
-                    //     } else {
-                    //         compilation.fileDependencies.add(context);
-                    //     }
-                    // });
-
-                    // opt.contextDependencies.forEach((context) => {
-                    //     if (Array.isArray(compilation.contextDependencies)) {
-                    //         compilation.contextDependencies.push(context)
-                    //     } else {
-                    //         compilation.contextDependencies.add(context);
-                    //     }
-                    // });
+                    opt.contextDependencies.forEach((context) => {
+                        // if (Array.isArray(compilation.contextDependencies)) {
+                        //     compilation.contextDependencies.push(context)
+                        // } else {
+                        compilation.contextDependencies.add(context);
+                        // }
+                    });
                 })
                 .then(() => {
                     callback && callback();
-                });
-            //
-            // return true;
+                })
+                .catch((err) => console.log(err));
         };
 
-        //
-        const runWorkWithSW = (compilation, callback) => {
-            if (!self.options.version) {
-                self.options.version = compilation.hash;
-            }
-
-            setTimeout(() => {
-                console.log('\n\x1b[36m%s\x1b[0m \x1b[35m%s\x1b[0m\n\x1b[36m%s\x1b[0m \n\x1b[32m%s\x1b[0m',
-                    'service worker version:',
-                    self.options.version,
-                    'service worker files for caching:',
-                    (self.options.files.length ? self.options.files.join('\n') : '[]')
-                );
-            }, 0);
-            // запускаем дочерний процесс, по сборке sw передавая ему список файлов
-            return createSW(self.options);
-        };
 
         if (compiler.hooks) {
             // // собираем список всех файлов
             compiler.hooks
-                .shouldEmit
-                .tap(PLUGIN_NAME, collectFiles);
-
-            if (self.options.watch) {
-                compiler.hooks
+                // .shouldEmit
                 .afterCompile
-                .tap(PLUGIN_NAME, this.addWatch(self.options.watch));
-            }
+                .tap(PLUGIN_NAME, collectFiles.bind(this));
+
+            // if (self.options.watch) {
+            //     compiler.hooks
+            //         .afterCompile
+            //         .tap(PLUGIN_NAME, this.addWatch(self.options.watch));
+            // }
         } else {
             compiler.plugin('should-emit', collectFiles);
 
@@ -163,7 +143,7 @@ class CustomPwaWebpackPlugin {
     }
 
     isHotUpdateCompilation(assets) {
-        return assets.js.length && assets.js.every(name => /\.hot-update\.js$/.test(name));
+        return assets.js.length && assets.js.every(name => /\.hot-update\.json$/.test(name));
     }
 }
 

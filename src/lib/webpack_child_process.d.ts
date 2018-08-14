@@ -1,4 +1,3 @@
-import webpack from 'webpack';
 
 export interface IConfigOptions {
     entry: string;
@@ -28,4 +27,4 @@ export declare function getConfig(options: IConfigOptions): webpack.Configuratio
 
 export declare function runWebpack(options: IConfigOptions): void;
 
-export declare function createSW(options: IConfigOptions): void;
+export declare function createSW(options: IConfigOptions): Promise<any>;
