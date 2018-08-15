@@ -1,7 +1,5 @@
 // @ts-check
-
-const glob = require('glob');
-const createSW = require('./lib/webpack_child_process');
+const createSW = require('./lib/webpack_child_process').createSW;
 
 /*
     получаем параметры,
@@ -18,7 +16,6 @@ let _count_of_runs = 0;
 
 
 /** @typedef {import("webpack/lib/Compiler")} Compiler */
-
 class CustomPwaWebpackPlugin {
     constructor(options) {
         if (!options) {
@@ -33,11 +30,13 @@ class CustomPwaWebpackPlugin {
             throw new Error('Empty "entry" options in custom-pwa-webpack-plugin ');
         }
 
+        /** @interface {import("./lib/webpack_child_process")} IConfigOptions */
         this.options = Object.assign({}, {
             name: 'service-worker.js',
             file_pattern: /\.(js|css|html)$/i,
             file_prefix: '/',
-            files: []
+            files: [],
+            _version: options.version
         }, options);
     }
 
@@ -47,103 +46,93 @@ class CustomPwaWebpackPlugin {
      * @returns {void}
      */
     apply(compiler) {
-        const self = this;
         // HACK for webpack <4 and Nuxt
         ++_count_of_runs;
 
-        if (self.options.num_runned) {
+        if (this.options.num_runned) {
             console.log('\x1b[33m%s\x1b[0m', `with option "num_runned" run just one iteration, current num:`, _count_of_runs);
-
-            if (self.options.num_runned !== _count_of_runs) {
+            if (this.options.num_runned !== _count_of_runs) {
                 return;
             }
         }
 
-        const collectFiles = function(compilation, callback) {
-            compilation.chunks.forEach(function(chunk) {
-                chunk.files.forEach(function(filename) {
-                    // var source = compilation.assets[filename].source();
-                    // сохраняем список файлов в параметры
-                    if (self.options.file_pattern.test(filename)) {
-                        self.options.files.push(
-                            `${self.options.file_prefix}${filename}`
-                        );
+        // собираем список всех файлов
+        if (compiler.hooks) {
+            // WEBPACK 4
+            compiler.hooks // .shouldEmit
+                .afterCompile
+                .tapPromise(PLUGIN_NAME, this.collectFiles.bind(this));
+        } else {
+            // WEBPACK <4
+            compiler.plugin('after-compile', this.collectFiles.bind(this));
+        }
+    }
+
+    /**
+     * Collect files and add watch to sw create
+     *
+     * @param {*} compilation
+     * @param {*} callback
+     */
+    collectFiles(compilation, callback) {
+        const self = this;
+
+        self.options.files = Object.keys(compilation.assets)
+            .filter(filename => self.options.file_pattern.test(filename))
+            .map(filename =>
+                `${self.options.file_prefix}${filename}`
+            );
+
+        if (!self.options._version) {
+            self.options.version = compilation.hash;
+        }
+
+        // запускаем дочерний процесс, по сборке sw передавая ему список файлов
+        return createSW(self.options)
+            .then(opt => {
+                for (let k in opt.assets) {
+                    if (opt.assets.hasOwnProperty(k)) {
+                        compilation.assets[k] = opt.assets[k]
                     }
-                });
-            });
-
-            if (!self.options.version) {
-                self.options.version = compilation.hash;
-            }
-
-            // запускаем дочерний процесс, по сборке sw передавая ему список файлов
-            createSW(self.options)
-                .then(opt => {
-                    for (let k in opt.assets) {
-                        if (opt.assets.hasOwnProperty(k)) {
-                            compilation.assets[k] = opt.assets[k]
+                }
+                opt.fileDependencies.forEach((context) => {
+                    if (Array.isArray(compilation.fileDependencies)) {
+                        if (compilation.fileDependencies.indexOf(context) === -1) {
+                            compilation.fileDependencies.push(context)
+                        }
+                    } else {
+                        if (!compilation.fileDependencies.has(context)) {
+                            compilation.fileDependencies.add(context);
                         }
                     }
-                    opt.fileDependencies.forEach((context) => {
-                        // if (Array.isArray(compilation.fileDependencies)) {
-                        //     compilation.fileDependencies.push(context)
-                        // } else {
-                        compilation.fileDependencies.add(context);
-                        // }
-                    });
+                });
 
-                    opt.contextDependencies.forEach((context) => {
-                        // if (Array.isArray(compilation.contextDependencies)) {
-                        //     compilation.contextDependencies.push(context)
-                        // } else {
-                        compilation.contextDependencies.add(context);
-                        // }
-                    });
-                })
-                .then(() => {
-                    callback && callback();
-                })
-                .catch((err) => console.log(err));
-        };
-
-
-        if (compiler.hooks) {
-            // // собираем список всех файлов
-            compiler.hooks
-                // .shouldEmit
-                .afterCompile
-                .tap(PLUGIN_NAME, collectFiles.bind(this));
-
-            // if (self.options.watch) {
-            //     compiler.hooks
-            //         .afterCompile
-            //         .tap(PLUGIN_NAME, this.addWatch(self.options.watch));
-            // }
-        } else {
-            compiler.plugin('should-emit', collectFiles);
-
-            if (self.options.watch) {
-                compiler.plugin('after-compile', this.addWatch(self.options.watch));
-            }
-        }
+                // opt.contextDependencies.forEach((context) => {
+                //     if (Array.isArray(compilation.contextDependencies)) {
+                //         if (compilation.contextDependencies.indexOf(context) === -1) {
+                //             compilation.contextDependencies.push(context)
+                //         }
+                //     } else {
+                //         if (!compilation.contextDependencies.has(context)) {
+                //             compilation.contextDependencies.add(context);
+                //         }
+                //     }
+                // });
+            })
+            .then(() => {
+                callback && callback();
+            })
+            .catch((err) => console.log(err));
     }
 
-    addWatch(watch) {
-        return (compilation, callback) => {
-            glob.sync(watch).forEach((file) => {
-                if (Array.isArray(compilation.fileDependencies)) {
-                    compilation.fileDependencies.push(file)
-                } else {
-                    compilation.fileDependencies.add(file);
-                }
-            });
-
-            callback && callback();
-        }
-    }
-
+    /**
+     * [wip] отмена обработки при hot апдейтах
+     *
+     * @param {Object} assets
+     */
     isHotUpdateCompilation(assets) {
-        return assets.js.length && assets.js.every(name => /\.hot-update\.json$/.test(name));
+        const assets_key = Object.keys(assets);
+        return assets_key.length && assets_key.some(name => /\.hot-update\.json$/.test(name));
     }
 }
 

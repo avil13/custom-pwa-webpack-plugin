@@ -2,7 +2,7 @@ const path = require('path');
 const CustomPwaWebpackPlugin = require('../src/custom-pwa-webpack-plugin');
 
 module.exports = {
-    watch: true,
+    // watch: true,
     watchOptions: {
         poll: true
     },

@@ -2,6 +2,8 @@
 const webpack = require('webpack');
 const path = require('path');
 
+let _compiler;
+
 function getConfig(options) {
     let conf = {
         entry: options.entry,
@@ -69,10 +71,13 @@ function createSW(params) {
     }, 0);
 
     return new Promise((resolve, reject) => {
-        const options = getConfig(params);
-        const compiler = webpack(options);
 
-        compiler.run((err, state) => {
+        if (!_compiler) {
+            const options = getConfig(params);
+            _compiler = webpack(options);
+        }
+
+        _compiler.run((err, state) => {
             if (err) {
                 throw err; // new Error(err);
             }
@@ -94,7 +99,7 @@ function createSW(params) {
     });
 }
 
-module.exports = createSW;
+module.exports = { createSW };
 
 
 // test
