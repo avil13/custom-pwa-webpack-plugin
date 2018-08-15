@@ -8,7 +8,7 @@ function getConfig(options) {
     let conf = {
         entry: options.entry,
         output: {
-            path: options.dist || path.resolve(__dirname, 'dist'),
+            path: options.dist,
             filename: options.name || 'service-worker.js'
         },
         module: {
@@ -39,7 +39,7 @@ function getConfig(options) {
             ]
         },
         resolve: {
-            extensions: ['*', '.js', '.ts', '.json']
+            extensions: ['.js', '.ts', '.json']
         },
         resolveLoader: {
             alias: {
@@ -56,11 +56,8 @@ function getConfig(options) {
     return conf;
 }
 
-const PLUGIN_NAME = 'Child_CustomPwaWebpackPlugin'
 
 function createSW(params) {
-    params = params || {};
-
     setTimeout(() => {
         console.log('\n\x1b[36m%s\x1b[0m \x1b[35m%s\x1b[0m\n\x1b[36m%s\x1b[0m \n\x1b[32m%s\x1b[0m',
             'service worker version:',

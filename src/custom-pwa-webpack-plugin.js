@@ -17,6 +17,7 @@ let _count_of_runs = 0;
 
 /** @typedef {import("webpack/lib/Compiler")} Compiler */
 class CustomPwaWebpackPlugin {
+
     constructor(options) {
         if (!options) {
             throw new Error('Set some options in custom-pwa-webpack-plugin');
@@ -39,6 +40,7 @@ class CustomPwaWebpackPlugin {
             _version: options.version
         }, options);
     }
+
 
     /**
      * Apply the plugin
@@ -68,6 +70,7 @@ class CustomPwaWebpackPlugin {
         }
     }
 
+
     /**
      * Collect files and add watch to sw create
      *
@@ -75,20 +78,21 @@ class CustomPwaWebpackPlugin {
      * @param {*} callback
      */
     collectFiles(compilation, callback) {
-        const self = this;
-
-        self.options.files = Object.keys(compilation.assets)
-            .filter(filename => self.options.file_pattern.test(filename))
+        this.options.files = Object.keys(compilation.assets)
+            .filter(filename => this.options.file_pattern.test(filename))
             .map(filename =>
-                `${self.options.file_prefix}${filename}`
+                `${this.options.file_prefix}${filename}`
             );
 
-        if (!self.options._version) {
-            self.options.version = compilation.hash;
+        if (!this.options._version) {
+            this.options.version = compilation.hash;
+        }
+        if (!this.options.dist) {
+            this.options.dist = compilation.outputPath;
         }
 
         // запускаем дочерний процесс, по сборке sw передавая ему список файлов
-        return createSW(self.options)
+        return createSW(this.options)
             .then(opt => {
                 for (let k in opt.assets) {
                     if (opt.assets.hasOwnProperty(k)) {
@@ -106,24 +110,13 @@ class CustomPwaWebpackPlugin {
                         }
                     }
                 });
-
-                // opt.contextDependencies.forEach((context) => {
-                //     if (Array.isArray(compilation.contextDependencies)) {
-                //         if (compilation.contextDependencies.indexOf(context) === -1) {
-                //             compilation.contextDependencies.push(context)
-                //         }
-                //     } else {
-                //         if (!compilation.contextDependencies.has(context)) {
-                //             compilation.contextDependencies.add(context);
-                //         }
-                //     }
-                // });
             })
             .then(() => {
                 callback && callback();
             })
             .catch((err) => console.log(err));
     }
+
 
     /**
      * [wip] отмена обработки при hot апдейтах

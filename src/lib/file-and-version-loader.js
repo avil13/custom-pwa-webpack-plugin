@@ -1,7 +1,7 @@
 const loaderUtils = require('loader-utils');
 
 module.exports = function(content, map, meta) {
-    const options = loaderUtils.getOptions(this) || {};
+    const options = loaderUtils.getOptions(this);
 
     this.callback(null, replacePatternData(content, options), map, meta);
     return; // always return undefined when calling callback()
