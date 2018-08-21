@@ -37,6 +37,7 @@ class CustomPwaWebpackPlugin {
             file_pattern: /\.(js|css|html)$/i,
             file_prefix: '/',
             files: [],
+            replace_names: {},
             _version: options.version
         }, options);
     }
@@ -71,6 +72,7 @@ class CustomPwaWebpackPlugin {
         }
     }
 
+
     /**
      * При событии done
      * @param {*} stats
@@ -87,21 +89,27 @@ class CustomPwaWebpackPlugin {
      * @param {*} callback
      */
     collectFiles(compilation, callback) {
-        this.options.files = Object.keys(compilation.assets)
-            .filter(filename => this.options.file_pattern.test(filename))
-            .map(filename =>
-                `${this.options.file_prefix}${filename}`
-            );
+        const self = this;
 
-        if (!this.options._version) {
-            this.options.version = compilation.hash;
+        self.options.files = Object.keys(compilation.assets)
+            .filter(filename => self.options.file_pattern.test(filename))
+            .map(filename =>
+                `${self.options.file_prefix}${filename}`
+            )
+            .map(name =>
+                self.options.replace_names[name] !== undefined ? self.options.replace_names[name] : name
+            )
+            .filter((item, i, arr) => arr.indexOf(item) === i); // Уникальные значения
+
+        if (!self.options._version) {
+            self.options.version = compilation.hash;
         }
-        if (!this.options.dist) {
-            this.options.dist = compilation.outputPath;
+        if (!self.options.dist) {
+            self.options.dist = compilation.outputPath;
         }
 
         // запускаем дочерний процесс, по сборке sw передавая ему список файлов
-        return createSW(this.options)
+        return createSW(self.options)
             .then(opt => {
                 for (let k in opt.assets) {
                     if (opt.assets.hasOwnProperty(k)) {

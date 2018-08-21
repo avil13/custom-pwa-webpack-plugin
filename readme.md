@@ -63,11 +63,45 @@ module.exports = {
 | name          | 'service-worker.js'     | false         | File name
 | file_pattern  | /\\.(js\|css\|html)$/i  | false         | Regular expression for file caching
 | file_prefix   | '/'                     | false         | Prefix path for files
+| [replace_names](#replace_names) | {}    | false         | Replace full path name for files, 
 | mode          | 'production'            | false         | Service Worker build file mode
 | num_runned    | 0                       | false         | HACK for webpack <4 and Nuxt
 
 > `num_runned` - Need if you start multiple processes, and only one need to run. Then specify the number. For Nuxt is `1`.
 
+---
+
+## Options
+
+##### replace_names
+
+
+`webpack.config.js`
+```JavaScript
+var path = require('path');
+var CustomPwaWebpackPlugin = require('custom-pwa-webpack-plugin');
+
+module.exports = {
+    // You config
+    entry: path.join(__dirname, './src/index.js'),
+    output: {
+        filename: 'bundle.js'
+    },
+    // ...
+
+    plugins: [
+        new CustomPwaWebpackPlugin({
+            entry: path.join(__dirname, 'my-service-worker.js'),
+            replace_names: {
+                // key is will be replaced with value
+                '/_nuxt/index.spa.html': '/'
+            }
+        })
+    ]
+}
+```
+
+---
 
 
 ### Tips for NuxtJs
@@ -90,7 +124,6 @@ module.exports = {
     }
 }
 ```
-
 
 In `layout/default.vue` add
 
