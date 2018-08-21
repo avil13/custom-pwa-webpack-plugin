@@ -1,4 +1,4 @@
-import firstModule from './first-module';
+// import firstModule from './first-module';
 
 
 function main() {

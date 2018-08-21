@@ -62,12 +62,21 @@ class CustomPwaWebpackPlugin {
         if (compiler.hooks) {
             // WEBPACK 4
             compiler.hooks // .shouldEmit
-                .afterCompile
-                .tapPromise(PLUGIN_NAME, this.collectFiles.bind(this));
+                .done
+                .tapPromise(PLUGIN_NAME, this.onDone.bind(this));
         } else {
             // WEBPACK <4
-            compiler.plugin('after-compile', this.collectFiles.bind(this));
+            // compiler.plugin('after-compile', this.collectFiles.bind(this));
+            compiler.plugin('done', this.onDone.bind(this));
         }
+    }
+
+    /**
+     * При событии done
+     * @param {*} stats
+     */
+    onDone(stats) {
+        return this.collectFiles.call(this, stats.compilation);
     }
 
 

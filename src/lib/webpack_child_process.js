@@ -4,6 +4,23 @@ const path = require('path');
 
 let _compiler;
 
+const fvOptions = function(opt) {
+    if (opt) {
+        fvOptions.options = opt;
+
+        setTimeout(function() {
+            console.log('\n\x1b[36m%s\x1b[0m \x1b[35m%s\x1b[0m\n\x1b[36m%s\x1b[0m \n\x1b[32m%s\x1b[0m',
+                'service worker version:',
+                opt.version,
+                'service worker files for caching:',
+                (opt.files.length ? opt.files.join('\n') : '[]')
+            );
+        }, 0);
+    } else {
+        return fvOptions.options;
+    }
+}
+
 function getConfig(options) {
     let conf = {
         entry: options.entry,
@@ -58,14 +75,8 @@ function getConfig(options) {
 
 
 function createSW(params) {
-    setTimeout(() => {
-        console.log('\n\x1b[36m%s\x1b[0m \x1b[35m%s\x1b[0m\n\x1b[36m%s\x1b[0m \n\x1b[32m%s\x1b[0m',
-            'service worker version:',
-            params.version,
-            'service worker files for caching:',
-            (params.files.length ? params.files.join('\n') : '[]')
-        );
-    }, 0);
+
+    fvOptions(params);
 
     return new Promise((resolve, reject) => {
 
@@ -76,6 +87,7 @@ function createSW(params) {
 
         _compiler.run((err, state) => {
             if (err) {
+                console.error(err);
                 throw err; // new Error(err);
             }
 
@@ -96,7 +108,7 @@ function createSW(params) {
     });
 }
 
-module.exports = { createSW };
+module.exports = { createSW, fvOptions };
 
 
 // test

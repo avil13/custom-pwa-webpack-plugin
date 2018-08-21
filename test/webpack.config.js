@@ -26,14 +26,13 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['*', '.js', '.ts', '.json']
+        extensions: ['.js', '.ts', '.json']
     },
     devtool: '#eval-source-map',
     plugins: [
         new CustomPwaWebpackPlugin({
             entry: path.join(__dirname, './src/sw-test-source.js'),
-            dist: path.join(__dirname, './dist'),
-            watch: path.join(__dirname, './src/**/*.js')
+            dist: path.join(__dirname, './dist')
         })
     ]
 };
