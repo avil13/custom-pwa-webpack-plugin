@@ -65,7 +65,8 @@ module.exports = {
 | file_prefix   | '/'                     | false         | Prefix path for files
 | [replace_names](#replace_names) | {}    | false         | Replace full path name for files, 
 | mode          | 'production'            | false         | Service Worker build file mode
-| num_runned    | 0                       | false         | HACK for webpack <4 and Nuxt
+| num_runned    | 1                       | false         | HACK for webpack <4 and Nuxt
+| dev           | false                   | false         | true - if watch mode
 
 > `num_runned` - Need if you start multiple processes, and only one need to run. Then specify the number. For Nuxt is `1`.
 

@@ -1,6 +1,6 @@
 {
     "name": "custom-pwa-webpack-plugin",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "description": "Make You PWA with You scripts",
     "main": "src/custom-pwa-webpack-plugin.js",
     "scripts": {
@@ -11,18 +11,18 @@
         "pwa",
         "progressive web apps",
         "webpack",
-        "webpack4"
+        "webpack4",
+        "webpack plugin"
     ],
     "repository": {
         "type": "git",
         "url": "https://github.com/avil13/custom-pwa-webpack-plugin"
     },
-    "author": "",
+    "author": "avil13",
     "license": "ISC",
     "devDependencies": {
         "babel-core": "^6.26.3",
         "babel-loader": "^7.1.5",
-        "loader-utils": "^1.1.0",
         "ts-loader": "^4.4.2",
         "webpack": "^4.16.4",
         "webpack-cli": "^3.1.0"

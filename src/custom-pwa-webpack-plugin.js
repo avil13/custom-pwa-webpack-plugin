@@ -37,6 +37,8 @@ class CustomPwaWebpackPlugin {
             file_pattern: /\.(js|css|html)$/i,
             file_prefix: '/',
             files: [],
+            num_runned: 1,
+            dev: false,
             replace_names: {},
             _version: options.version
         }, options);
@@ -53,7 +55,6 @@ class CustomPwaWebpackPlugin {
         ++_count_of_runs;
 
         if (this.options.num_runned) {
-            console.log('\x1b[33m%s\x1b[0m', `with option "num_runned" run just one iteration, current num:`, _count_of_runs);
             if (this.options.num_runned !== _count_of_runs) {
                 return;
             }
@@ -62,13 +63,22 @@ class CustomPwaWebpackPlugin {
         // собираем список всех файлов
         if (compiler.hooks) {
             // WEBPACK 4
-            compiler.hooks // .shouldEmit
-                .done
-                .tapPromise(PLUGIN_NAME, this.onDone.bind(this));
+            if (this.options.dev) {
+                compiler.hooks // .shouldEmit
+                    .afterEmit
+                    .tapPromise(PLUGIN_NAME, this.collectFiles.bind(this));
+            } else {
+                compiler.hooks // .shouldEmit
+                    .done
+                    .tapPromise(PLUGIN_NAME, this.onDone.bind(this));
+            }
         } else {
             // WEBPACK <4
-            // compiler.plugin('after-compile', this.collectFiles.bind(this));
-            compiler.plugin('done', this.onDone.bind(this));
+            if (this.options.dev) {
+                compiler.plugin('after-emit', this.collectFiles.bind(this));
+            } else {
+                compiler.plugin('done', this.onDone.bind(this));
+            }
         }
     }
 
