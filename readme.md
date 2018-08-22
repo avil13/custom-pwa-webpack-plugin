@@ -4,6 +4,10 @@
 
 ![webpack](img/custom-pwa-webpack-plugin.svg)
 
+<img alt="version" src="https://img.shields.io/npm/v/custom-pwa-webpack-plugin/latest.svg?style=flat-square">
+
+<img alt="downloads" src="https://img.shields.io/npm/dt/custom-pwa-webpack-plugin.svg?style=flat-square">
+
 A plugin to help you create your Progressive Web Apps.
 
 It will suit you if you know what you are doing, and you just need a tool for this.

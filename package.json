@@ -1,6 +1,6 @@
 {
     "name": "custom-pwa-webpack-plugin",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "description": "Make You PWA with You scripts",
     "main": "src/custom-pwa-webpack-plugin.js",
     "scripts": {
