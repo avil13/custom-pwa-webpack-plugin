@@ -122,10 +122,6 @@ class CustomPwaWebpackPlugin {
                             throw err;
                         }
                     });
-                } else {
-                    if (err) {
-                        throw err;
-                    }
                 }
             });
 
