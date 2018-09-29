@@ -62,6 +62,7 @@ module.exports = {
 | Parameters    | Default                 | Required      | Description  |
 |---------------|:------------------------|:-------------:|--------------|
 | entry         |                         | true          | The file from which to start the build script (absolute path)
+| run           | true                    | false         | If you don't need create service worker
 | dist          |                         | false         | The folder to save the script (absolute path)
 | version       |                         | false         | Version to create the cache
 | name          | 'service-worker.js'     | false         | File name

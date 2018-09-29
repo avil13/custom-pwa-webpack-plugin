@@ -1,5 +1,7 @@
 // @ts-check
 const createSW = require('./lib/webpack_child_process').createSW;
+const fs = require('fs');
+const path = require('path');
 
 /*
     получаем параметры,
@@ -33,6 +35,7 @@ class CustomPwaWebpackPlugin {
 
         /** @interface {import("./lib/webpack_child_process")} IConfigOptions */
         this.options = Object.assign({}, {
+            run: true,
             name: 'service-worker.js',
             file_pattern: /\.(js|css|html)$/i,
             file_prefix: '/',
@@ -101,6 +104,34 @@ class CustomPwaWebpackPlugin {
     collectFiles(compilation, callback) {
         const self = this;
 
+        if (!self.options._version) {
+            self.options.version = compilation.hash;
+        }
+        if (!self.options.dist) {
+            self.options.dist = compilation.outputPath;
+        }
+
+        if (self.options.run === false) {
+            const sw_file = path.join(self.options.dist, self.options.name);
+            // clear service-worker
+            fs.stat(sw_file, function (err, stat) {
+                if (err == null) {
+                    // File exists
+                    fs.unlink(sw_file, (err) => {
+                        if (err) {
+                            throw err;
+                        }
+                    });
+                } else {
+                    if (err) {
+                        throw err;
+                    }
+                }
+            });
+
+            return Promise.resolve().then(() => callback && callback());
+        }
+
         self.options.files = Object.keys(compilation.assets)
             .filter(filename => self.options.file_pattern.test(filename))
             .map(filename =>
@@ -110,13 +141,6 @@ class CustomPwaWebpackPlugin {
                 self.options.replace_names[name] !== undefined ? self.options.replace_names[name] : name
             )
             .filter((item, i, arr) => arr.indexOf(item) === i); // Уникальные значения
-
-        if (!self.options._version) {
-            self.options.version = compilation.hash;
-        }
-        if (!self.options.dist) {
-            self.options.dist = compilation.outputPath;
-        }
 
         // запускаем дочерний процесс, по сборке sw передавая ему список файлов
         return createSW(self.options)
