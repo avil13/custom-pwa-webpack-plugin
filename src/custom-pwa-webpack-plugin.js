@@ -125,7 +125,7 @@ class CustomPwaWebpackPlugin {
                 }
             });
 
-            return Promise.resolve().then(() => callback && callback());
+            return callback && callback() || Promise.resolve();
         }
 
         self.options.files = Object.keys(compilation.assets)
