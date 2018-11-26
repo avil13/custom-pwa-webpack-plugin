@@ -72,10 +72,11 @@ class CustomPwaWebpackPlugin {
                     .tapPromise(PLUGIN_NAME, this.collectFiles.bind(this));
             } else {
                 compiler.hooks // .shouldEmit
-                    // .done
+                    .done
                     // .tapPromise(PLUGIN_NAME, this.onDone.bind(this));
-                    .shouldEmit
-                    .tap(PLUGIN_NAME, this.collectFiles.bind(this));
+                    .tapAsync(PLUGIN_NAME, this.onDone.bind(this));
+                    // .shouldEmit
+                    // .tap(PLUGIN_NAME, this.collectFiles.bind(this));
             }
         } else {
             // WEBPACK <4
@@ -145,13 +146,13 @@ class CustomPwaWebpackPlugin {
             .then(opt => {
                 for (let k in opt.assets) {
                     if (opt.assets.hasOwnProperty(k)) {
-                        compilation.assets[k] = opt.assets[k]
+                        compilation.assets[k] = opt.assets[k];
                     }
                 }
                 opt.fileDependencies.forEach((context) => {
                     if (Array.isArray(compilation.fileDependencies)) {
                         if (compilation.fileDependencies.indexOf(context) === -1) {
-                            compilation.fileDependencies.push(context)
+                            compilation.fileDependencies.push(context);
                         }
                     } else {
                         if (!compilation.fileDependencies.has(context)) {
