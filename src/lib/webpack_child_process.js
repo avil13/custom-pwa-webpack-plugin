@@ -4,11 +4,11 @@ const path = require('path');
 
 let _compiler;
 
-const fvOptions = function(opt) {
+const fvOptions = function (opt) {
     if (opt) {
         fvOptions.options = opt;
 
-        setTimeout(function() {
+        setTimeout(function () {
             console.log('\n\x1b[36m%s\x1b[0m \x1b[35m%s\x1b[0m\n\x1b[36m%s\x1b[0m \n\x1b[32m%s\x1b[0m',
                 'service worker version:',
                 opt.version,
@@ -22,12 +22,14 @@ const fvOptions = function(opt) {
 }
 
 function getConfig(options) {
-    let conf = {
+    const conf = {
+        mode: options.dev ? 'development' : 'production',
         entry: options.entry,
         output: {
             path: options.dist,
             filename: options.name || 'service-worker.js'
         },
+        watch: options.dev,
         module: {
             rules: [{
                     test: /\.ts$/,
@@ -63,12 +65,8 @@ function getConfig(options) {
                 'file-and-version-loader': path.join(__dirname, './file-and-version-loader')
             }
         },
-        devtool: '#eval-source-map'
+        devtool: options.dev ? '#eval-source-map' : false
     };
-
-    if (options.mode) {
-        conf['mode'] = options.mode;
-    }
 
     return conf;
 }
@@ -85,35 +83,51 @@ function createSW(params) {
             _compiler = webpack(options);
         }
 
-        _compiler.run((err, state) => {
+        _compiler.run((err, stats) => {
             if (err) {
                 console.error(err);
-                throw err; // new Error(err);
-            }
+                // throw err; // new Error(err);
+                reject(err);
+            } else {
+                const info = stats.toJson();
 
-            const assets = Object.assign({}, state.compilation.assets);
+                if (stats.hasErrors()) {
+                    console.error(info.errors);
+                }
 
-            resolve({
-                assets,
-                fileDependencies: state.compilation.fileDependencies,
-                contextDependencies: state.compilation.contextDependencies
-            });
+                if (stats.hasWarnings()) {
+                    console.warn(info.warnings);
+                }
 
-            for (let k in state.compilation.assets) {
-                if (state.compilation.assets.hasOwnProperty(k)) {
-                    delete state.compilation.assets[k];
+                const assets = Object.assign({}, stats.compilation.assets);
+
+                resolve({
+                    assets: Object.assign({}, assets),
+                    fileDependencies: stats.compilation.fileDependencies,
+                    contextDependencies: stats.compilation.contextDependencies
+                });
+
+                for (let k in stats.compilation.assets) {
+                    if (stats.compilation.assets.hasOwnProperty(k)) {
+                        delete stats.compilation.assets[k];
+                    }
                 }
             }
         });
     });
 }
 
-module.exports = { createSW, fvOptions };
+module.exports = {
+    createSW,
+    fvOptions
+};
 
 
 // test
 const DEBUG = process.argv.includes('--local-debug-mode');
 
 if (DEBUG) {
-    createSW({ entry: path.join(__dirname, '../../test/src/sw-test-source.js') });
+    createSW({
+        entry: path.join(__dirname, '../../test/src/sw-test-source.js')
+    });
 }

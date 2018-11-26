@@ -72,8 +72,10 @@ class CustomPwaWebpackPlugin {
                     .tapPromise(PLUGIN_NAME, this.collectFiles.bind(this));
             } else {
                 compiler.hooks // .shouldEmit
-                    .done
-                    .tapPromise(PLUGIN_NAME, this.onDone.bind(this));
+                    // .done
+                    // .tapPromise(PLUGIN_NAME, this.onDone.bind(this));
+                    .shouldEmit
+                    .tap(PLUGIN_NAME, this.collectFiles.bind(this));
             }
         } else {
             // WEBPACK <4
@@ -160,8 +162,7 @@ class CustomPwaWebpackPlugin {
             })
             .then(() => {
                 callback && callback();
-            })
-            .catch((err) => console.log(err));
+            });
     }
 
 
