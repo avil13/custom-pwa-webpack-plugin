@@ -148,6 +148,10 @@ class CustomPwaWebpackPlugin {
         // запускаем дочерний процесс, по сборке sw передавая ему список файлов
         return createSW(self.options)
             .then(opt => {
+                if (!opt) {
+                    return;
+                }
+
                 for (let k in opt.assets) {
                     if (opt.assets.hasOwnProperty(k)) {
                         compilation.assets[k] = opt.assets[k];
