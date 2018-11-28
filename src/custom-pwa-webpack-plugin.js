@@ -40,6 +40,7 @@ class CustomPwaWebpackPlugin {
             file_pattern: /\.(js|css|html)$/i,
             file_prefix: '/',
             files: [],
+            add: [],
             num_runned: 1,
             dev: false,
             replace_names: {},
@@ -74,7 +75,7 @@ class CustomPwaWebpackPlugin {
                 compiler.hooks // .shouldEmit
                     .done
                     // .tapPromise(PLUGIN_NAME, this.onDone.bind(this));
-                    .tapAsync(PLUGIN_NAME, this.onDone.bind(this));
+                    .tap(PLUGIN_NAME, this.onDone.bind(this));
                     // .shouldEmit
                     // .tap(PLUGIN_NAME, this.collectFiles.bind(this));
             }
@@ -140,6 +141,9 @@ class CustomPwaWebpackPlugin {
                 self.options.replace_names[name] !== undefined ? self.options.replace_names[name] : name
             )
             .filter((item, i, arr) => arr.indexOf(item) === i); // Уникальные значения
+
+        // добавляем пути указанные в конфиге
+        self.options.add.forEach(v => self.options.files.push(v));
 
         // запускаем дочерний процесс, по сборке sw передавая ему список файлов
         return createSW(self.options)

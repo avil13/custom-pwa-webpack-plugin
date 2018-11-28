@@ -68,6 +68,7 @@ module.exports = {
 | name          | 'service-worker.js'     | false         | File name
 | file_pattern  | /\\.(js\|css\|html)$/i  | false         | Regular expression for file caching
 | file_prefix   | '/'                     | false         | Prefix path for files
+| add           | []                      | false         | The list of paths added manually
 | [replace_names](#replace_names) | {}    | false         | Replace full path name for files, 
 | mode          | 'production'            | false         | Service Worker build file mode
 | num_runned    | 1                       | false         | HACK for webpack <4 and Nuxt
