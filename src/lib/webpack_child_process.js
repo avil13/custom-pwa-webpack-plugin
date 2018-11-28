@@ -2,8 +2,6 @@
 const webpack = require('webpack');
 const path = require('path');
 
-let _compiler;
-
 const fvOptions = function (opt) {
     if (opt) {
         fvOptions.options = opt;
@@ -20,7 +18,7 @@ const fvOptions = function (opt) {
         return fvOptions.options;
     }
 }
-
+/** @return {webpack.Configuration} */
 function getConfig(options) {
     const conf = {
         mode: options.dev ? 'development' : 'production',
@@ -78,12 +76,8 @@ function createSW(params) {
 
     return new Promise((resolve, reject) => {
 
-        if (!_compiler) {
-            const options = getConfig(params);
-            _compiler = webpack(options);
-        }
-
-        _compiler.run((err, stats) => {
+        const options = getConfig(params);
+        webpack(options, (err, stats) => {
             if (err) {
                 console.error(err);
                 // throw err; // new Error(err);
@@ -102,16 +96,16 @@ function createSW(params) {
                 const assets = Object.assign({}, stats.compilation.assets);
 
                 resolve({
-                    assets: Object.assign({}, assets),
+                    assets,
                     fileDependencies: stats.compilation.fileDependencies,
                     contextDependencies: stats.compilation.contextDependencies
                 });
 
-                for (let k in stats.compilation.assets) {
-                    if (stats.compilation.assets.hasOwnProperty(k)) {
-                        delete stats.compilation.assets[k];
-                    }
-                }
+                // for (let k in stats.compilation.assets) {
+                //     if (stats.compilation.assets.hasOwnProperty(k)) {
+                //         delete stats.compilation.assets[k];
+                //     }
+                // }
             }
         });
     });
