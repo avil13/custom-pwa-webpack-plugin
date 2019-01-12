@@ -83,7 +83,9 @@ function createSW(params) {
 }
 
 function run(params, resolve, reject) {
+    // @ts-ignore
     run.resolve = resolve;
+    // @ts-ignore
     run.reject = reject;
 
     if (!_compiler) {
@@ -91,6 +93,7 @@ function run(params, resolve, reject) {
         _compiler = webpack(options, (err, stats) => {
             if (err) {
                 console.error(err);
+                // @ts-ignore
                 run.reject(err);
             } else {
                 const info = stats.toJson();
@@ -109,6 +112,7 @@ function run(params, resolve, reject) {
 
                 const assets = Object.assign({}, stats.compilation.assets);
 
+                // @ts-ignore
                 run.resolve({
                     assets,
                     fileDependencies: stats.compilation.fileDependencies,

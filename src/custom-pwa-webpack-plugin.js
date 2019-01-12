@@ -72,10 +72,11 @@ class CustomPwaWebpackPlugin {
                     .afterEmit
                     .tapPromise(PLUGIN_NAME, this.collectFiles.bind(this));
             } else {
-                compiler.hooks // .shouldEmit
-                    .done
-                    // .tapPromise(PLUGIN_NAME, this.onDone.bind(this));
-                    .tap(PLUGIN_NAME, this.onDone.bind(this));
+                compiler.hooks
+                    .emit
+                    .tapPromise(PLUGIN_NAME, this.collectFiles.bind(this));
+                    // .done
+                    // .tap(PLUGIN_NAME, this.onDone.bind(this));
                     // .shouldEmit
                     // .tap(PLUGIN_NAME, this.collectFiles.bind(this));
             }
@@ -134,11 +135,11 @@ class CustomPwaWebpackPlugin {
 
         self.options.files = Object.keys(compilation.assets)
             .filter(filename => self.options.file_pattern.test(filename))
-            .map(filename =>
-                `${self.options.file_prefix}${filename}`
-            )
             .map(name =>
                 self.options.replace_names[name] !== undefined ? self.options.replace_names[name] : name
+            )
+            .map(filename =>
+                `${self.options.file_prefix}${filename}`
             )
             .filter((item, i, arr) => arr.indexOf(item) === i); // Уникальные значения
 
@@ -157,17 +158,17 @@ class CustomPwaWebpackPlugin {
                         compilation.assets[k] = opt.assets[k];
                     }
                 }
-                opt.fileDependencies.forEach((context) => {
-                    if (Array.isArray(compilation.fileDependencies)) {
-                        if (compilation.fileDependencies.indexOf(context) === -1) {
-                            compilation.fileDependencies.push(context);
-                        }
-                    } else {
-                        if (!compilation.fileDependencies.has(context)) {
-                            compilation.fileDependencies.add(context);
-                        }
-                    }
-                });
+                // opt.fileDependencies.forEach((context) => {
+                //     if (Array.isArray(compilation.fileDependencies)) {
+                //         if (compilation.fileDependencies.indexOf(context) === -1) {
+                //             compilation.fileDependencies.push(context);
+                //         }
+                //     } else {
+                //         if (!compilation.fileDependencies.has(context)) {
+                //             compilation.fileDependencies.add(context);
+                //         }
+                //     }
+                // });
             })
             .then(() => {
                 callback && callback();
