@@ -17,7 +17,6 @@ function replacePatternData(content, options) {
     const vers_str = `
 const VERSION = '${version}';
 const files = [\n'${files.join("',\n'")}'\n];
-this['VERSION'] = this['VERSION'] || '0';
 `;
 
     return content.replace(/\/\/\s<version_template[^>]*>/gimu, vers_str);
